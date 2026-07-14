@@ -5,7 +5,6 @@ import warnings
 warnings.filterwarnings('ignore')
 st.set_page_config(page_title="Laptop Price Predictor NG", layout="wide")
 
-@st.cache_resource
 def load_model():
         return joblib.load('best_laptop_price_model.pkl')
         model = joblib.load('best_laptop_price_model.pkl')
