@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 import joblib
-
+import warnings
+warnings.filterwarnings('ignore')
 st.set_page_config(page_title="Laptop Price Predictor NG", layout="wide")
 
 @st.cache_resource
