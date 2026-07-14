@@ -50,7 +50,7 @@ if st.button("Predict Price in NGN", type="primary", key="predict_btn"):
     
     input_df = pd.DataFrame([input_data])
     model = load_model()
-prediction = model.predict(input_df)[0]
+    prediction = model.predict(input_df)[0]
     
     st.success(f"### Estimated Price: ₦{prediction:,.2f}")
     st.balloons()
