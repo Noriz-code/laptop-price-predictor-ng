@@ -8,7 +8,7 @@ st.set_page_config(page_title="Laptop Price Predictor NG", layout="wide")
 def load_model():
     return joblib.load(r'C:\Users\userone\Desktop\models\best_laptop_price_model.pkl')
 
-model = load_model()
+   model = joblib.load('best_laptop_price_model.pkl')
 
 st.title("💻 Laptop Price Predictor - Nigeria NG")
 st.write("Predict laptop price in NGN using GradientBoost_200")
