@@ -1,58 +1,35 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import warnings
-warnings.filterwarnings('ignore')
-st.set_page_config(page_title="Laptop Price Predictor NG", layout="wide")
+import numpy as np
 
-def load_model():
-        return joblib.load('best_laptop_price_model.pkl')
-        model = joblib.load('best_laptop_price_model.pkl')
-
+st.set_page_config(page_title="Laptop Price Predictor - Nigeria NG", layout="wide")
 st.title("💻 Laptop Price Predictor - Nigeria NG")
-st.write("Predict laptop price in NGN using GradientBoost_200")
+st.write("Fill the specs below and get an estimated price in ₦")
 
-st.sidebar.header("Enter Laptop Specs")
-
-col1, col2 = st.sidebar.columns(2)
+# ALL YOUR INPUTS HERE
+col1, col2 = st.columns(2)
 with col1:
-    company = st.selectbox("Company", ['Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'Apple', 'MSI'])
-    type_name = st.selectbox("Type", ['Notebook', 'Gaming', 'Ultrabook', '2 in 1 Convertible', 'Workstation'])
-    ram = st.selectbox("RAM GB", [4, 8, 16, 32, 64])
-    cpu_type = st.selectbox("CPU Type", ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'AMD'])
-    cpu_brand = st.selectbox("CPU Brand", ['Intel', 'AMD'])
-    cpu_speed = st.slider("CPU Speed GHz", 1.0, 4.5, 2.5, 0.1)
+    brand = st.selectbox("Brand", ["Dell", "HP", "Lenovo", "Apple", "Asus", "Acer"])
+    type_name = st.selectbox("Type", ["Notebook", "Gaming", "Ultrabook", "2 in 1 Convertible"])
+    ram = st.selectbox("RAM", [4, 8, 16, 32, 64])
+    cpu = st.selectbox("CPU", ["Intel Core i3", "Intel Core i5", "Intel Core i7", "AMD Ryzen 5", "AMD Ryzen 7"])
+
 with col2:
-    gpu = st.selectbox("GPU", ['Intel', 'Nvidia', 'AMD'])
-    gpu_brand = st.selectbox("GPU Brand", ['Intel', 'Nvidia', 'AMD'])
-    inches = st.slider("Screen Inches", 10.0, 18.0, 15.6, 0.1)
-    screen_res = st.selectbox("Screen Resolution", ['1366x768', '1920x1080', '2560x1600', '3840x2160'])
-    weight = st.slider("Weight KG", 0.8, 4.0, 2.0, 0.1)
-    opsys = st.selectbox("OS", ['Windows 10', 'Windows 7', 'Mac OS', 'Linux', 'No OS'])
+    gpu = st.selectbox("GPU", ["Intel", "Nvidia", "AMD"])
+    screen_size = st.number_input("Screen Size Inch", 11.0, 18.0, 15.6)
+    storage = st.selectbox("Storage GB", [256, 512, 1024, 2048])
+    os = st.selectbox("OS", ["Windows 10", "Windows 11", "MacOS", "Linux"])
+    weight = st.number_input("Weight KG", 0.5, 5.0, 2.0)
 
-storage_type = st.sidebar.selectbox("Storage Type", ['SSD', 'HDD', 'Hybrid', 'Flash Storage'])
-capacity_score = st.sidebar.number_input("Storage Capacity GB", 128, 2000, 512)
-storage = st.sidebar.number_input("Storage GB", 128, 2000, 512)
-
-storage_per_ram = capacity_score / ram
-
-# ONLY ONE BUTTON
-if st.button("Predict Price in NGN", type="primary", key="predict_btn"):
-    
-    input_data = {
-        'Company': company, 'TypeName': type_name, 'ScreenResolution': screen_res,
-        'Gpu': gpu, 'OpSys': opsys, 'Storage_Type': storage_type,
-        'Cpu_Brand': cpu_brand, 'Cpu_Type': cpu_type, 'Gpu_Brand': gpu_brand,
-        'Inches': inches, 'Ram': ram, 'Weight': weight, 'Storage': storage,
-        'Storage_per_Ram': storage_per_ram, 'Capacity_Score': capacity_score,
-        'Cpu_Speed': cpu_speed
-    }
-    
-    input_df = pd.DataFrame([input_data])
-    model = load_model()
-    prediction = model.predict(input_df)[0]
-    
-    st.success(f"### Estimated Price: ₦{prediction:,.2f}")
-    st.balloons()
-
-st.caption("Model: GradientBoostingRegressor | All 16 features included")
+# THE MAGIC: LOAD MODEL ONLY WHEN BUTTON IS CLICKED
+if st.button("Predict Price in NGN", type="primary"):
+    with st.spinner("Loading model and predicting..."):
+        model = joblib.load("best_laptop_price_model.pkl") # <-- loads here, not at start
+        
+        # YOU NEED TO CHANGE THIS PART TO MATCH YOUR TRAINING COLUMNS
+        input_data = pd.DataFrame([[brand, type_name, ram, cpu, gpu, screen_size, storage, os, weight]],
+                                  columns=["Brand", "TypeName", "Ram", "Cpu", "Gpu", "ScreenSizeInch", "StorageGB", "Os", "Weight"])
+        
+        prediction = model.predict(input_data)
+        st.success(f"### Estimated Price: ₦{prediction[0]:,.2f}")
