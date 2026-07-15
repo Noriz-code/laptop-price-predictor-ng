@@ -3,4 +3,4 @@ pandas
 numpy
 joblib
 requests
-scikit-learn
+scikit-learn==1.4.2
